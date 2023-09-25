@@ -9,6 +9,6 @@ data class Timesheet(
     val startTime: LocalDateTime,
     val endTime: LocalDateTime,
     val description: String,
-    val photoUrl: String?,
+    val imageUrl: String?,
     val createdAt: LocalDateTime,
 )

@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DailyGoalDto(
     @SerialName("id")
-    val id: String,
+    val id: String? = "",
 
     @SerialName("user_uid")
     val userUid: String,

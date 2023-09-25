@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TimesheetDto(
     @SerialName("id")
-    val id: String,
+    val id: String? = "",
 
     @SerialName("user_uid")
     val userUid: String,
@@ -27,7 +27,7 @@ data class TimesheetDto(
     val description: String,
 
     @SerialName("image_url")
-    val imageIr: String?,
+    val imageUrl: String?,
 
     @SerialName("createdAt")
     val createdAt: LocalDateTime,
