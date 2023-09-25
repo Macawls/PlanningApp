@@ -1,16 +1,16 @@
 package com.org.planningapp.data.repository.impl
 
 import android.content.Context
-import com.org.planningapp.data.repository.IAuthenticationRepository
+import com.org.planningapp.data.repository.AuthenticationRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.gotrue.providers.builtin.Email
 import javax.inject.Inject
 
-class SupabaseAuthRepository @Inject constructor(
+class AuthRepositoryImpl @Inject constructor(
     private val goTrue: GoTrue,
     @ApplicationContext private val context: Context
-) : IAuthenticationRepository {
+) : AuthenticationRepository {
     override suspend fun signIn(email: String, password: String): Boolean {
         return try {
             goTrue.loginWith(Email) {
