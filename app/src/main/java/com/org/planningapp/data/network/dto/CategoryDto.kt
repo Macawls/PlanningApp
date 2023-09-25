@@ -9,8 +9,8 @@ data class CategoryDto(
         @SerialName("id")
         val id: String? = "",
 
-        @SerialName("user_uid")
-        val userUid: String,
+        @SerialName("user_id")
+        val userId: String,
 
         @SerialName("name")
         val name: String,

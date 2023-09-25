@@ -8,14 +8,14 @@ data class TimesheetDto(
     @SerialName("id")
     val id: String? = "",
 
-    @SerialName("user_uid")
-    val userUid: String,
+    @SerialName("user_id")
+    val userId: String,
 
     @SerialName("category_id")
     val categoryId: String,
 
-    @SerialName("entry_time")
-    val entryTime: LocalDateTime,
+    @SerialName("date")
+    val date: LocalDateTime,
 
     @SerialName("start_time")
     val startTime: LocalDateTime,

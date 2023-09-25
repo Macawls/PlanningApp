@@ -9,8 +9,8 @@ data class DailyGoalDto(
     @SerialName("id")
     val id: String? = "",
 
-    @SerialName("user_uid")
-    val userUid: String,
+    @SerialName("user_id")
+    val userId: String,
 
     @SerialName("min_daily_hours")
     val minDailyHours: Int,
