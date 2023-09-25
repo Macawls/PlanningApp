@@ -3,7 +3,7 @@ import kotlinx.datetime.LocalDateTime
 
 data class Timesheet(
     val id: String,
-    val userId: String,
+    val userUid: String,
     val categoryId: String,
     val entryTime: LocalDateTime,
     val startTime: LocalDateTime,
