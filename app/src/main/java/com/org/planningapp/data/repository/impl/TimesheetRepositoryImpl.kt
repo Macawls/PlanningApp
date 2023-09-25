@@ -3,6 +3,7 @@ package com.org.planningapp.data.repository.impl
 import com.org.planningapp.data.network.dto.TimesheetDto
 import com.org.planningapp.data.repository.TimesheetRepository
 import com.org.planningapp.domain.model.Timesheet
+import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.storage.Storage
 import javax.inject.Inject
@@ -10,22 +11,28 @@ import javax.inject.Inject
 const val TIMESHEET_TABLE_ID = "timesheets"
 
 class TimesheetRepositoryImpl @Inject constructor(
-   private val postgrest: Postgrest,
+    private val goTrue: GoTrue,
+    private val postgrest: Postgrest,
     private val storage: Storage,
 ) : TimesheetRepository {
 
     override suspend fun createTimesheet(timesheet: Timesheet): Boolean {
         return try {
+            val user = goTrue.currentUserOrNull() ?: throw Exception("User not logged in")
+
             val timesheetDto = TimesheetDto(
+                userId = user.id,
+                createdAt = timesheet.createdAt,
+                categoryId = timesheet.categoryId,
+
+                date = timesheet.date,
                 startTime = timesheet.startTime,
                 endTime = timesheet.endTime,
+
                 description = timesheet.description,
-                userUid = timesheet.userUid,
-                entryTime = timesheet.entryTime,
-                imageUrl = timesheet.imageUrl,
-                createdAt = timesheet.createdAt,
-                categoryId = timesheet.categoryId
+                imageUrl = timesheet.imageUrl
             )
+
             postgrest[TIMESHEET_TABLE_ID].insert(timesheetDto)
             true
         } catch (e: java.lang.Exception) {
