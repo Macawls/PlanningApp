@@ -133,7 +133,7 @@ fun LoginForm(
         coroutineScope.launch {
             val res = viewModel.onSignIn()
             if (res) {
-                navController.popBackStack()
+                navController.popBackStack() // because nested nav graph
                 navController.navigate(Graph.HOME)
             }
         }
