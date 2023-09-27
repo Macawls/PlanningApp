@@ -1,0 +1,31 @@
+package com.org.planningapp.ui
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.ui.graphics.vector.ImageVector
+
+sealed class BottomBarScreen(
+    val route: String,
+    val title: String,
+    val icon: ImageVector
+) {
+    object Home : BottomBarScreen(
+        route = "home",
+        title = "Home",
+        icon = Icons.Default.Home
+    )
+
+    object Categories : BottomBarScreen(
+        route = "categories",
+        title = "Categories",
+        icon = Icons.Default.List
+    )
+
+    object Timesheets : BottomBarScreen(
+        route = "timesheets",
+        title = "Timesheets",
+        icon = Icons.Default.DateRange
+    )
+}

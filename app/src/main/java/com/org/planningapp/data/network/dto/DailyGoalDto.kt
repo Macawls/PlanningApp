@@ -1,6 +1,9 @@
 package com.org.planningapp.data.network.dto
 
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -9,9 +12,6 @@ data class DailyGoalDto(
     @SerialName("id")
     val id: String? = "",
 
-    @SerialName("user_id")
-    val userId: String,
-
     @SerialName("min_daily_hours")
     val minDailyHours: Int,
 
@@ -19,5 +19,5 @@ data class DailyGoalDto(
     val maxDailyHours: Int,
 
     @SerialName("created_at")
-    val createdAt: LocalDateTime,
+    val createdAt: LocalDateTime? = Clock.System.now().toLocalDateTime(TimeZone.UTC),
 )

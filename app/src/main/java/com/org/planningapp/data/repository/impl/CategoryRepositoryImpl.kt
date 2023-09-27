@@ -15,10 +15,7 @@ class CategoryRepositoryImpl @Inject constructor(
 ) : CategoryRepository {
     override suspend fun createCategory(category: Category): Boolean {
         return try {
-            val user = goTrue.currentUserOrNull() ?: throw Exception("User not logged in")
-
             val categoryDto = CategoryDto(
-                userId = user.id,
                 name = category.name,
                 createdAt = category.createdAt
             )

@@ -1,11 +1,11 @@
-package com.org.planningapp.presentation.feature.signup
+package com.org.planningapp.ui.screens.auth.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.org.planningapp.data.repository.AuthenticationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -13,8 +13,8 @@ class SignUpViewModel @Inject constructor(
     private val authenticationRepository: AuthenticationRepository
 ) : ViewModel() {
 
-    private val _message = MutableStateFlow<String>("")
-    val message = _message
+    private val _isSuccess = MutableStateFlow(false)
+    val isSuccess = _isSuccess
 
     private val _email = MutableStateFlow<String>("")
     val email = _email
@@ -30,13 +30,11 @@ class SignUpViewModel @Inject constructor(
         this._password.value = password
     }
 
-    fun onSignUp() {
-        viewModelScope.launch {
-            val res = authenticationRepository.signUp(_email.value, _password.value)
-            when (res) {
-                true -> _message.emit("Account created successfully!")
-                false -> _message.emit("Create account failed !")
-            }
-        }
+    suspend fun onSignUp(): Boolean {
+        return viewModelScope.async {
+            val res = authenticationRepository.signIn(_email.value, _password.value)
+            _isSuccess.value = res
+            res
+        }.await()
     }
 }

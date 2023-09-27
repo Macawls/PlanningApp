@@ -18,7 +18,6 @@ class DailyGoalRepositoryImpl @Inject constructor(
             val user = goTrue.currentUserOrNull() ?: throw Exception("User not logged in")
 
             val dailyGoalDto = DailyGoalDto(
-                userId = user.id,
                 createdAt = dailyGoal.createdAt,
                 minDailyHours = dailyGoal.minDailyHours,
                 maxDailyHours = dailyGoal.maxDailyHours,
