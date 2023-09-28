@@ -21,8 +21,6 @@ class CategoriesListViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading
 
-
-
     init {
         getCategories()
     }
@@ -59,6 +57,4 @@ class CategoriesListViewModel @Inject constructor(
             getCategories()
         }
     }
-
-
 }

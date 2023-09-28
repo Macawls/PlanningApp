@@ -13,13 +13,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -30,7 +33,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.org.planningapp.domain.model.Category
+import com.org.planningapp.ui.graphs.CategoryRoutes
 import kotlinx.datetime.Clock
 
 
@@ -86,7 +91,8 @@ fun CategoryItemPreview(
 
 @Composable
 fun CategoryList(
-    categories: List<Category>
+    categories: List<Category>,
+    categoriesListViewModel: CategoriesListViewModel = hiltViewModel()
 ) {
     Column(
         modifier = Modifier
@@ -94,9 +100,12 @@ fun CategoryList(
             .padding(16.dp)
     ) {
         categories.forEach { category ->
-            CategoryItem(category = category, onDelete = {
-                category.id
-            })
+            CategoryItem(
+                category = category,
+                onDelete = {
+                    categoriesListViewModel.removeCategory(category)
+                }
+            )
         }
     }
 }
@@ -126,11 +135,27 @@ fun CategoryListPreview(
     CategoryList(categories = categories)
 }
 
+@Composable
+fun AddCategoryButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    FloatingActionButton(
+        modifier = modifier,
+        onClick = onClick,
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary
+    ) {
+        Icon(imageVector = Icons.Default.Add, contentDescription = null)
+    }
+}
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CategoriesScreen(
     modifier: Modifier = Modifier,
+    navController: NavController,
     viewModel: CategoriesListViewModel = hiltViewModel()
 ) {
     val isLoading by viewModel.isLoading.collectAsState(initial = false)
@@ -138,20 +163,30 @@ fun CategoriesScreen(
         refreshing = isLoading,
         onRefresh = { viewModel.refresh() }
     )
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pullRefresh(pullRefreshState)
-            .verticalScroll(rememberScrollState())
-    ) {
-        CategoryList(categories = viewModel.categoriesList.collectAsState().value)
-        PullRefreshIndicator(
-            modifier = Modifier.align(Alignment.TopCenter),
-            refreshing = isLoading,
-            state = pullRefreshState,
-            backgroundColor = if (isLoading) Color.Red else Color.Green
-        )
-    }
+    Scaffold(
+        floatingActionButton = {
+            AddCategoryButton(
+                modifier = Modifier.padding(36.dp, 0.dp, 18.dp, 84.dp),
+                onClick = {
+                    navController.navigate(CategoryRoutes.AddCategory.route)
+                }
+            )
+        },
+        content = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pullRefresh(pullRefreshState)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                CategoryList(categories = viewModel.categoriesList.collectAsState().value)
+                PullRefreshIndicator(
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    refreshing = isLoading,
+                    state = pullRefreshState
+                )
+            }
+        }
+    )
 }
 

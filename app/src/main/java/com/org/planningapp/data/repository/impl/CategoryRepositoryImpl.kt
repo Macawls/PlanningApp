@@ -3,7 +3,6 @@ package com.org.planningapp.data.repository.impl
 import com.org.planningapp.data.network.dto.CategoryDto
 import com.org.planningapp.data.repository.CategoryRepository
 import com.org.planningapp.domain.model.Category
-import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.postgrest.Postgrest
 import javax.inject.Inject
 
@@ -11,7 +10,6 @@ const val CATEGORIES_TABLE_ID = "categories"
 
 class CategoryRepositoryImpl @Inject constructor(
     private val postgrest: Postgrest,
-    private val goTrue: GoTrue
 ) : CategoryRepository {
     override suspend fun createCategory(category: Category): Boolean {
         return try {

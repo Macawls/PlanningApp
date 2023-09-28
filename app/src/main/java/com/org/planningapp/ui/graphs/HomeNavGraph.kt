@@ -7,6 +7,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.org.planningapp.ui.BottomBarScreen
 import com.org.planningapp.ui.screens.categories.CategoriesScreen
+import com.org.planningapp.ui.screens.categories.add.AddCategoryScreen
+
+sealed class CategoryRoutes(val route: String) {
+    object Home: CategoryRoutes(BottomBarScreen.Categories.route)
+    object AddCategory: CategoryRoutes("add_category")
+}
 
 @Composable
 fun HomeNavGraph(navController: NavHostController) {
@@ -23,8 +29,11 @@ fun HomeNavGraph(navController: NavHostController) {
         }
 
         composable(route = BottomBarScreen.Categories.route) {
-            //Text(text = "Categories")
-            CategoriesScreen()
+            CategoriesScreen(navController = navController)
+        }
+
+        composable(route = CategoryRoutes.AddCategory.route) {
+            AddCategoryScreen(navController = navController)
         }
     }
 }
