@@ -29,7 +29,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,7 +36,6 @@ import androidx.navigation.NavController
 import com.org.planningapp.domain.model.Category
 import com.org.planningapp.ui.graphs.CategoryRoutes
 import kotlinx.datetime.Clock
-
 
 @Composable
 fun CategoryItem(
@@ -47,7 +45,7 @@ fun CategoryItem(
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(8.dp)
-        .background(Color.White)
+        .background(MaterialTheme.colorScheme.surfaceVariant)
         .padding(16.dp)
     ) {
         Column (
