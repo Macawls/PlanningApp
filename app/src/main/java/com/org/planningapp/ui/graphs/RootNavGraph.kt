@@ -13,12 +13,11 @@ object Graph {
 }
 
 @Composable
-fun RootNavigationGraph(navController: NavHostController) {
+fun RootNavigationGraph(navController: NavHostController, startDesitination: String) {
     NavHost(
         navController = navController,
         route = Graph.ROOT,
-        startDestination = Graph.AUTH
-        //startDestination = Graph.HOME
+        startDestination = startDesitination
     ) {
         authNavGraph(navController = navController)
         composable(route = Graph.HOME) {
