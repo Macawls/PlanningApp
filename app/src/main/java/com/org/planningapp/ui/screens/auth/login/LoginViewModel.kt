@@ -22,6 +22,9 @@ class LoginViewModel @Inject constructor(
     private val _isSuccess = MutableStateFlow(false)
     val isSuccess = _isSuccess
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading
+
     fun onEmailChange(email: String) {
         this._email.value = email
     }
@@ -32,8 +35,10 @@ class LoginViewModel @Inject constructor(
 
     suspend fun onSignIn(): Boolean {
         return viewModelScope.async {
+            _isLoading.value = true
             val res = authenticationRepository.signIn(_email.value, _password.value)
             _isSuccess.value = res
+            _isLoading.value = false
             res
         }.await()
     }

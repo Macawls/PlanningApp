@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,8 +37,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.org.planningapp.ui.components.LoadingButton
 import com.org.planningapp.ui.graphs.Graph
 import kotlinx.coroutines.launch
+
 
 @Composable
 fun EmailField(
@@ -127,6 +128,7 @@ fun LoginForm(
 ) {
     val email = viewModel.email.collectAsState()
     val password = viewModel.password.collectAsState()
+    val loading = viewModel.isLoading.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     fun onSubmit() {
@@ -161,13 +163,12 @@ fun LoginForm(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.padding(20.dp))
-            Button(
-                onClick = { onSubmit() },
+            LoadingButton(
+                isLoading = loading.value,
+                buttonText = "Sign In",
                 modifier = Modifier.fillMaxWidth(),
-                enabled = email.value.isNotEmpty() && password.value.length > 5
-            ) {
-                Text(text = "Sign In")
-            }
+                enabled = email.value.isNotEmpty() && password.value.length > 5,
+                onClick = { onSubmit() })
         }
     }
 }
