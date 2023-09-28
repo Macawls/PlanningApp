@@ -32,6 +32,10 @@ fun HomeNavGraph(navController: NavHostController) {
             CategoriesScreen(navController = navController)
         }
 
+        composable(route = BottomBarScreen.Goals.route) {
+            Text(text = "Goals")
+        }
+
         composable(route = CategoryRoutes.AddCategory.route) {
             AddCategoryScreen(navController = navController)
         }

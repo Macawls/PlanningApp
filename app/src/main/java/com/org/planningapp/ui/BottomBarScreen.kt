@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomBarScreen(
@@ -27,5 +28,11 @@ sealed class BottomBarScreen(
         route = "timesheets",
         title = "Timesheets",
         icon = Icons.Default.DateRange
+    )
+
+    object Goals : BottomBarScreen(
+        route = "goals",
+        title = "Goals",
+        icon = Icons.Default.Person
     )
 }
