@@ -23,11 +23,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -52,6 +55,7 @@ fun AddCategoryScreen(
     val routineScope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
     val title = addCategoryViewModel.title.collectAsState()
+    val focusRequester = remember { FocusRequester() }
 
     fun submitAddCategory(){
         var res: Boolean = false
@@ -106,7 +110,9 @@ fun AddCategoryScreen(
                 value = title.value,
                 label = { Text("Category Name") },
                 onValueChange = { addCategoryViewModel.onTitleChange(it) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
                 maxLines = 1,
                 keyboardActions = KeyboardActions(
                     onDone = { submitAddCategory() }
@@ -116,6 +122,9 @@ fun AddCategoryScreen(
                     keyboardType = KeyboardType.Text
                 )
             )
+            LaunchedEffect(UInt){
+                focusRequester.requestFocus()
+            }
             Spacer(modifier = Modifier.padding(20.dp))
             LoadingButton(
                 isLoading = loading.value,
