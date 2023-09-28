@@ -1,7 +1,6 @@
 package com.org.planningapp.ui.screens.categories.add
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,10 +17,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,9 +48,10 @@ fun AddCategoryScreen(
     navController: NavController,
     addCategoryViewModel: AddCategoryViewModel = hiltViewModel(),
 ) {
-    val title = addCategoryViewModel.title.collectAsState()
-    val loading = addCategoryViewModel.isLoading.collectAsState()
+
     val routineScope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
+    val title = addCategoryViewModel.title.collectAsState()
 
     fun submitAddCategory(){
         var res: Boolean = false
@@ -66,6 +70,7 @@ fun AddCategoryScreen(
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         topBar = {
             TopAppBar(
                 navigationIcon = {
@@ -79,16 +84,17 @@ fun AddCategoryScreen(
                         )
                     }
                 },
-                modifier = Modifier.background(MaterialTheme.colorScheme.primary),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
                 title = {
                     Text(
-                        text = "Add Category",
+                        text = "Add New Category",
                         color = MaterialTheme.colorScheme.onPrimary,
                     )
                 },
             )
         }
     ){
+        val loading = addCategoryViewModel.isLoading.collectAsState()
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
