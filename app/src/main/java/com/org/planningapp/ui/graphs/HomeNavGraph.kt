@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.org.planningapp.ui.BottomBarScreen
+import com.org.planningapp.ui.screens.categories.CategoriesScreen
 
 @Composable
 fun HomeNavGraph(navController: NavHostController) {
@@ -22,7 +23,8 @@ fun HomeNavGraph(navController: NavHostController) {
         }
 
         composable(route = BottomBarScreen.Categories.route) {
-            Text(text = "Categories")
+            //Text(text = "Categories")
+            CategoriesScreen()
         }
     }
 }
