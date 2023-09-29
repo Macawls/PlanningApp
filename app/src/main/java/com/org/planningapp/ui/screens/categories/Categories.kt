@@ -2,6 +2,7 @@ package com.org.planningapp.ui.screens.categories
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,12 +14,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,24 +28,34 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.org.planningapp.domain.model.Category
+import com.org.planningapp.ui.components.AddFloatingButton
 import com.org.planningapp.ui.graphs.CategoryRoutes
+import com.org.planningapp.ui.graphs.TimesheetByCategoryDestination
+import com.org.planningapp.ui.screens.readableDate
+import com.org.planningapp.ui.screens.toLocalDateTimeUTC
 import kotlinx.datetime.Clock
 
 @Composable
 fun CategoryItem(
     category: Category,
-    onDelete: () -> Unit = {}
+    onDelete: () -> Unit = {},
+    onClick: () -> Unit = {}
 ) {
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(8.dp)
+        .clip(MaterialTheme.shapes.large)
         .background(MaterialTheme.colorScheme.surfaceVariant)
         .padding(16.dp)
+        .clickable {
+            onClick()
+        }
     ) {
         Column (
             modifier = Modifier.fillMaxWidth()
@@ -81,7 +90,7 @@ fun CategoryItemPreview(
     category: Category = Category(
         id = "1",
         name = "Category 1",
-        createdAt = Clock.System.now().toLocalDateTime()
+        createdAt = Clock.System.now().toLocalDateTimeUTC()
     )
 ) {
     CategoryItem(category = category)
@@ -90,7 +99,8 @@ fun CategoryItemPreview(
 @Composable
 fun CategoryList(
     categories: List<Category>,
-    categoriesListViewModel: CategoriesListViewModel = hiltViewModel()
+    categoriesListViewModel: CategoriesListViewModel = hiltViewModel(),
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
@@ -102,6 +112,12 @@ fun CategoryList(
                 category = category,
                 onDelete = {
                     categoriesListViewModel.removeCategory(category)
+                },
+                onClick = {
+                    val route = TimesheetByCategoryDestination
+                        .createRouteWithParam(category.id)
+
+                    navController.navigate(route)
                 }
             )
         }
@@ -115,37 +131,22 @@ fun CategoryListPreview(
         Category(
             id = "1",
             name = "Test 1",
-            createdAt = Clock.System.now().toLocalDateTime()
+            createdAt = Clock.System.now().toLocalDateTimeUTC()
         ),
         Category(
             id = "2",
             name = "Test 2",
-            createdAt = Clock.System.now().toLocalDateTime()
+            createdAt = Clock.System.now().toLocalDateTimeUTC()
         ),
         Category(
             id = "3",
             name = "Test 3",
-            createdAt = Clock.System.now().toLocalDateTime()
+            createdAt = Clock.System.now().toLocalDateTimeUTC()
         )
     )
 
 ) {
-    CategoryList(categories = categories)
-}
-
-@Composable
-fun AddCategoryButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    FloatingActionButton(
-        modifier = modifier,
-        onClick = onClick,
-        containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary
-    ) {
-        Icon(imageVector = Icons.Default.Add, contentDescription = null)
-    }
+    //CategoryList(categories = categories)
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -163,7 +164,7 @@ fun CategoriesScreen(
     )
     Scaffold(
         floatingActionButton = {
-            AddCategoryButton(
+            AddFloatingButton(
                 modifier = Modifier.padding(36.dp, 0.dp, 18.dp, 84.dp),
                 onClick = {
                     navController.navigate(CategoryRoutes.AddCategory.route)
@@ -177,7 +178,10 @@ fun CategoriesScreen(
                     .pullRefresh(pullRefreshState)
                     .verticalScroll(rememberScrollState())
             ) {
-                CategoryList(categories = viewModel.categoriesList.collectAsState().value)
+                CategoryList(
+                    categories = viewModel.categoriesList.collectAsState().value,
+                    navController = navController
+                )
                 PullRefreshIndicator(
                     modifier = Modifier.align(Alignment.TopCenter),
                     refreshing = isLoading,

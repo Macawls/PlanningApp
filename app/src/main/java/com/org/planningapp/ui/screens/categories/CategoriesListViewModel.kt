@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.org.planningapp.data.repository.CategoryRepository
 import com.org.planningapp.domain.model.Category
+import com.org.planningapp.ui.screens.toLocalDateTimeUTC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -36,12 +37,16 @@ class CategoriesListViewModel @Inject constructor(
                 Category(
                     id = it.id ?: "",
                     name = it.name,
-                    createdAt = it.createdAt ?: Clock.System.now().toLocalDateTime()
+                    createdAt = it.createdAt ?: Clock.System.now().toLocalDateTimeUTC()
                 )
             })
 
             _isLoading.emit(false)
         }
+    }
+
+    suspend fun GetCategoryById(id: String): Category {
+        return categoryRepository.getCategory(id)
     }
 
     fun removeCategory(category: Category){

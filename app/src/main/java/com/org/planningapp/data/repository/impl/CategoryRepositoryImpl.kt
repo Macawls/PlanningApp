@@ -30,10 +30,17 @@ class CategoryRepositoryImpl @Inject constructor(
         return postgrest[CATEGORIES_TABLE_ID].select().decodeList<CategoryDto>()
     }
 
-    override suspend fun getCategory(id: String): CategoryDto {
-        return postgrest[CATEGORIES_TABLE_ID].select {
+    override suspend fun getCategory(id: String): Category {
+
+        val categoryDto = postgrest[CATEGORIES_TABLE_ID].select {
             eq("id", id)
         }.decodeSingle<CategoryDto>()
+
+        return Category(
+            id = categoryDto.id ?: "",
+            name = categoryDto.name,
+            createdAt = categoryDto.createdAt ?: throw Exception("createdAt is null")
+        )
     }
 
     override suspend fun deleteCategory(id: String) {

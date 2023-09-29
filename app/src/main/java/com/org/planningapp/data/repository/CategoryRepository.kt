@@ -6,7 +6,7 @@ import com.org.planningapp.domain.model.Category
 interface CategoryRepository {
     suspend fun createCategory(category: Category): Boolean
     suspend fun getCategories(): List<CategoryDto>
-    suspend fun getCategory(id: String): CategoryDto
+    suspend fun getCategory(id: String): Category
 
     // deleting a category would mean
     // deleting all the timesheets associated with it

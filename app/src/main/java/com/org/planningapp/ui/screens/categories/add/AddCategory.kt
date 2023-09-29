@@ -39,7 +39,7 @@ import androidx.navigation.NavController
 import com.org.planningapp.domain.model.Category
 import com.org.planningapp.ui.components.LoadingButton
 import com.org.planningapp.ui.graphs.CategoryRoutes
-import com.org.planningapp.ui.screens.categories.toLocalDateTime
+import com.org.planningapp.ui.screens.toLocalDateTimeUTC
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
@@ -58,16 +58,14 @@ fun AddCategoryScreen(
     val focusRequester = remember { FocusRequester() }
 
     fun submitAddCategory(){
-        var res: Boolean = false
         routineScope.launch {
             val category = Category(
                 name = title.value,
                 id = "",
-                createdAt = Clock.System.now().toLocalDateTime()
+                createdAt = Clock.System.now().toLocalDateTimeUTC()
             )
 
-            res = addCategoryViewModel.addCategory(category)
-            if (res) {
+            if (addCategoryViewModel.addCategory(category)) {
                 navController.navigate(CategoryRoutes.Home.route)
             }
         }
@@ -91,7 +89,7 @@ fun AddCategoryScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
                 title = {
                     Text(
-                        text = "Add New Category",
+                        text = "Add New Category!  📝🔥",
                         color = MaterialTheme.colorScheme.onPrimary,
                     )
                 },

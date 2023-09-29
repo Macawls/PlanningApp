@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TimesheetDto(
     @SerialName("id")
-    val id: String? = "",
+    val id: Int? = null,
 
     @SerialName("category_id")
     val categoryId: String,

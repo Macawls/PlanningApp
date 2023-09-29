@@ -5,7 +5,10 @@ import com.org.planningapp.domain.model.Timesheet
 
 interface TimesheetRepository {
     suspend fun createTimesheet(timesheet: Timesheet): Boolean
-    suspend fun getTimesheets(): List<TimesheetDto>
-    suspend fun getTimesheet(id: String): TimesheetDto
-    suspend fun deleteTimesheet(id: String)
+    suspend fun getAllTimesheets(): List<TimesheetDto>
+
+    suspend fun getTimesheetsFromCategory(categoryID: String): List<TimesheetDto>
+
+    suspend fun getTimesheet(id: Int): TimesheetDto
+    suspend fun deleteTimesheet(id: Int)
 }

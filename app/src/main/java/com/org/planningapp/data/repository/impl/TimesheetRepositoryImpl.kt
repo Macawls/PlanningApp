@@ -35,17 +35,25 @@ class TimesheetRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getTimesheets(): List<TimesheetDto> {
-        return postgrest[TIMESHEET_TABLE_ID].select().decodeList()
+    override suspend fun getAllTimesheets(): List<TimesheetDto> {
+        return postgrest[TIMESHEET_TABLE_ID]
+            .select()
+            .decodeList<TimesheetDto>()
     }
 
-    override suspend fun getTimesheet(id: String): TimesheetDto {
+    override suspend fun getTimesheetsFromCategory(categoryID: String): List<TimesheetDto> {
+        return postgrest[TIMESHEET_TABLE_ID].select {
+            eq("category_id", categoryID)
+        }.decodeList<TimesheetDto>()
+    }
+
+    override suspend fun getTimesheet(id: Int): TimesheetDto {
         return postgrest[TIMESHEET_TABLE_ID].select {
             eq("id", id)
         }.decodeSingle<TimesheetDto>()
     }
 
-    override suspend fun deleteTimesheet(id: String) {
+    override suspend fun deleteTimesheet(id: Int) {
         postgrest[TIMESHEET_TABLE_ID].delete {
             eq("id", id)
         }

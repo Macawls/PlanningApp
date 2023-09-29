@@ -1,7 +1,6 @@
 package com.org.planningapp.ui
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
@@ -22,12 +21,6 @@ sealed class BottomBarScreen(
         route = "categories",
         title = "Categories",
         icon = Icons.Default.List
-    )
-
-    object Timesheets : BottomBarScreen(
-        route = "timesheets",
-        title = "Timesheets",
-        icon = Icons.Default.DateRange
     )
 
     object Goals : BottomBarScreen(
