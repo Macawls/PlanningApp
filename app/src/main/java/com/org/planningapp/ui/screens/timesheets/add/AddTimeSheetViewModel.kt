@@ -44,18 +44,6 @@ class AddTimeSheetViewModel @Inject constructor(
         }.await()
     }
 
-    fun onDateChange(date: LocalDateTime) {
-        this._date.value = date
-    }
-
-    fun onStartDateChange(startDate: LocalDateTime) {
-        this._startDate.value = startDate
-    }
-
-    fun onEndDateChange(endDate: LocalDateTime) {
-        this._endDate.value = endDate
-    }
-
     fun onDescriptionChange(description: String) {
         this._description.value = description
     }

@@ -1,20 +1,26 @@
 package com.org.planningapp.ui.screens.timesheets.add
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DisplayMode
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,9 +28,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
@@ -42,18 +51,112 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.org.planningapp.domain.model.Timesheet
 import com.org.planningapp.ui.components.LoadingButton
 import com.org.planningapp.ui.screens.categories.CategoriesListViewModel
+import com.org.planningapp.ui.screens.readableTime
 import com.org.planningapp.ui.screens.toLocalDateTimeUTC
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ShowTimePickerDialog(
+    state: TimePickerState,
+    routineScope: CoroutineScope,
+    snackState: SnackbarHostState,
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit,
+    msg: String
+){
+    val formatter = remember { SimpleDateFormat("hh:mm a", Locale.getDefault()) }
+
+    TimePickerDialog(
+        onCancel = { onCancel() },
+        onConfirm = {
+            val cal = Calendar.getInstance()
+            cal.set(Calendar.HOUR_OF_DAY, state.hour)
+            cal.set(Calendar.MINUTE, state.minute)
+            cal.isLenient = false
+            routineScope.launch {
+                snackState.showSnackbar("$msg ${formatter.format(cal.time)}")
+            }
+            onConfirm()
+        }
+    ) {
+        TimePicker(state = state)
+    }
+}
+
+
+@Composable
+fun TimePickerDialog(
+    title: String = "Select Time",
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit,
+    toggle: @Composable () -> Unit = {},
+    content: @Composable () -> Unit,
+) {
+    Dialog(
+        onDismissRequest = onCancel,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
+        ),
+    ) {
+        Surface(
+            shape = MaterialTheme.shapes.extraLarge,
+            tonalElevation = 6.dp,
+            modifier = Modifier
+                .width(IntrinsicSize.Min)
+                .height(IntrinsicSize.Min)
+                .background(
+                    shape = MaterialTheme.shapes.extraLarge,
+                    color = MaterialTheme.colorScheme.surface
+                ),
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp),
+                    text = title,
+                    style = MaterialTheme.typography.labelMedium
+                )
+                content()
+                Row(
+                    modifier = Modifier
+                        .height(40.dp)
+                        .fillMaxWidth()
+                ) {
+                    toggle()
+                    Spacer(modifier = Modifier.weight(1f))
+                    TextButton(
+                        onClick = onCancel
+                    ) { Text("Cancel") }
+                    TextButton(
+                        onClick = onConfirm
+                    ) { Text("OK") }
+                }
+            }
+        }
+    }
+}
+
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,6 +170,9 @@ fun AddTimesheetScreen(
     val endDate = viewModel.endDate.collectAsState()
     val description = viewModel.description.collectAsState()
     val isLoading = viewModel.isLoading.collectAsState()
+
+    var showPickerOne by remember { mutableStateOf(false) }
+    var showPickerTwo by remember { mutableStateOf(false) }
 
     val focusRequester = remember { FocusRequester() }
     var categoryName by remember { mutableStateOf("") }
@@ -84,7 +190,7 @@ fun AddTimesheetScreen(
         initialDisplayMode = DisplayMode.Input,
     )
 
-    var showTimePicker by remember { mutableStateOf(false) }
+    val formatter = remember { SimpleDateFormat("hh:mm a", Locale.getDefault()) }
 
     val startTimePickerState = rememberTimePickerState(
         initialHour = 12,
@@ -192,6 +298,26 @@ fun AddTimesheetScreen(
                     .padding(horizontal = 48.dp)
                     .verticalScroll(rememberScrollState())
             ) {
+                if (showPickerOne){
+                    ShowTimePickerDialog(
+                        state = startTimePickerState,
+                        routineScope = routineScope ,
+                        snackState = snackBarHostState,
+                        onCancel = { showPickerOne = false },
+                        onConfirm = { showPickerOne = false },
+                        msg = "Entered Start Time of "
+                    )
+                }
+                if (showPickerTwo){
+                    ShowTimePickerDialog(
+                        state = endTimePickerState,
+                        routineScope = routineScope ,
+                        snackState = snackBarHostState,
+                        onCancel = { showPickerTwo = false },
+                        onConfirm = { showPickerTwo = false },
+                        msg = "Entered End Time of "
+                    )
+                }
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -212,26 +338,35 @@ fun AddTimesheetScreen(
                         modifier = Modifier,
                         state = dateState,
                     )
-                    Text(
-                        text = "Start Time",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Divider( modifier = Modifier.padding(6.dp))
-                    TimeInput(state = startTimePickerState)
-                    Text(
-                        text = "End Time",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Divider( modifier = Modifier.padding(6.dp))
-                    TimeInput(state = endTimePickerState)
+                    Row {
+                        Button(
+                            onClick = { showPickerOne = true }
+                        ) {
+                            Text("Set Start Time")
+                        }
+                        Spacer(modifier = Modifier.padding(20.dp))
+                        Text(text = "${startTimePickerState.hour} : ${readableTime(startTimePickerState.minute)}")
+                    }
+                    Row {
+                        Button(
+                            onClick = { showPickerTwo = true }
+                        ) {
+                            Text("Set End Time")
+                        }
+                        Spacer(modifier = Modifier.padding(20.dp))
+                        Text(
+                            text = "${endTimePickerState.hour} : ${readableTime(endTimePickerState.minute)}"
+                        )
+                    }
                     LoadingButton(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(top = 32.dp)
+                            .fillMaxWidth(),
                         isLoading = isLoading.value ,
                         buttonText = "Save Timesheet" ,
                         onClick = { submitAddCategory() },
                         enabled = description.value.isNotEmpty()
                                 && startDate.value < endDate.value
-                                && startTimePickerState.hour < endTimePickerState.hour
                     )
                 }
             }

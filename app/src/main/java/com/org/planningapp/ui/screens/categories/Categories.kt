@@ -37,7 +37,7 @@ import com.org.planningapp.domain.model.Category
 import com.org.planningapp.ui.components.AddFloatingButton
 import com.org.planningapp.ui.graphs.CategoryRoutes
 import com.org.planningapp.ui.graphs.TimesheetByCategoryDestination
-import com.org.planningapp.ui.screens.readableDate
+import com.org.planningapp.ui.screens.readableDateAndTime
 import com.org.planningapp.ui.screens.toLocalDateTimeUTC
 import kotlinx.datetime.Clock
 
@@ -66,7 +66,7 @@ fun CategoryItem(
             )
             Spacer(modifier = Modifier.padding(18.dp))
             Row {
-                Text(text = "Added: " + category.createdAt.readableDate(),
+                Text(text = "Added: " + category.createdAt.readableDateAndTime(),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
