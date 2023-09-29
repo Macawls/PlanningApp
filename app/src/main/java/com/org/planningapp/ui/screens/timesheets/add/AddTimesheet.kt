@@ -2,6 +2,7 @@ package com.org.planningapp.ui.screens.timesheets.add
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,15 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -34,8 +31,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerState
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -56,6 +51,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.org.planningapp.domain.model.Timesheet
+import com.org.planningapp.ui.components.ComponentTopAppBar
 import com.org.planningapp.ui.components.LoadingButton
 import com.org.planningapp.ui.screens.categories.CategoriesListViewModel
 import com.org.planningapp.ui.screens.readableTime
@@ -256,29 +252,13 @@ fun AddTimesheetScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navController.navigate("timesheets/${categoryID}")
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
-                title = {
-                    Text(
-                        text = "Add Timesheet for $categoryName",
-                        color = MaterialTheme.colorScheme.onPrimary,
-                    )
-                },
+            ComponentTopAppBar(
+                navController = navController,
+                route = "timesheets/${categoryID}",
+                title = "Add Timesheet for $categoryName!"
             )
         }
     ) {
-        if (categoryName == ""){
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -286,90 +266,100 @@ fun AddTimesheetScreen(
                     .padding(horizontal = 48.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 82.dp)
-                    .padding(horizontal = 48.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                if (showPickerOne){
-                    ShowTimePickerDialog(
-                        state = startTimePickerState,
-                        routineScope = routineScope ,
-                        snackState = snackBarHostState,
-                        onCancel = { showPickerOne = false },
-                        onConfirm = { showPickerOne = false },
-                        msg = "Entered Start Time of "
+                if (categoryName == "") {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
                     )
                 }
-                if (showPickerTwo){
-                    ShowTimePickerDialog(
-                        state = endTimePickerState,
-                        routineScope = routineScope ,
-                        snackState = snackBarHostState,
-                        onCancel = { showPickerTwo = false },
-                        onConfirm = { showPickerTwo = false },
-                        msg = "Entered End Time of "
-                    )
-                }
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    TextField(
-                        value = description.value,
-                        onValueChange = { viewModel.onDescriptionChange(it) } ,
-                        singleLine =  false,
-                        maxLines = 3,
-                        label = { Text("Description") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester)
-                    )
-                    DatePicker(
-                        modifier = Modifier,
-                        state = dateState,
-                    )
-                    Row {
-                        Button(
-                            onClick = { showPickerOne = true }
-                        ) {
-                            Text("Set Start Time")
-                        }
-                        Spacer(modifier = Modifier.padding(20.dp))
-                        Text(text = "${startTimePickerState.hour} : ${readableTime(startTimePickerState.minute)}")
-                    }
-                    Row {
-                        Button(
-                            onClick = { showPickerTwo = true }
-                        ) {
-                            Text("Set End Time")
-                        }
-                        Spacer(modifier = Modifier.padding(20.dp))
-                        Text(
-                            text = "${endTimePickerState.hour} : ${readableTime(endTimePickerState.minute)}"
+                else {
+                    if (showPickerOne){
+                        ShowTimePickerDialog(
+                            state = startTimePickerState,
+                            routineScope = routineScope ,
+                            snackState = snackBarHostState,
+                            onCancel = { showPickerOne = false },
+                            onConfirm = { showPickerOne = false },
+                            msg = "Entered Start Time of "
                         )
                     }
-                    LoadingButton(
+                    if (showPickerTwo){
+                        ShowTimePickerDialog(
+                            state = endTimePickerState,
+                            routineScope = routineScope ,
+                            snackState = snackBarHostState,
+                            onCancel = { showPickerTwo = false },
+                            onConfirm = { showPickerTwo = false },
+                            msg = "Entered End Time of "
+                        )
+                    }
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .padding(top = 32.dp)
-                            .fillMaxWidth(),
-                        isLoading = isLoading.value ,
-                        buttonText = "Save Timesheet" ,
-                        onClick = { submitAddCategory() },
-                        enabled = description.value.isNotEmpty()
-                                && startDate.value < endDate.value
-                    )
+                            .fillMaxWidth()
+                    ) {
+                        TextField(
+                            value = description.value,
+                            onValueChange = { viewModel.onDescriptionChange(it) } ,
+                            singleLine =  false,
+                            maxLines = 3,
+                            label = { Text("Description") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(focusRequester)
+                        )
+                        DatePicker(
+                            modifier = Modifier,
+                            state = dateState,
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp)
+                                .border(2.dp, MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.shapes.small)
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Button(
+                                onClick = { showPickerOne = true }
+                            ) {
+                                Text("Set Start Time")
+                            }
+                            Spacer(modifier = Modifier.padding(20.dp))
+                            Text(text = "${startTimePickerState.hour} : ${readableTime(startTimePickerState.minute)}")
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp)
+                                .border(2.dp, MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.shapes.small)
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Button(
+                                onClick = { showPickerTwo = true }
+                            ) {
+                                Text("Set End Time")
+                            }
+                            Spacer(modifier = Modifier.padding(20.dp))
+                            Text(
+                                text = "${endTimePickerState.hour} : ${readableTime(endTimePickerState.minute)}"
+                            )
+                        }
+                        LoadingButton(
+                            modifier = Modifier
+                                .padding(top = 32.dp)
+                                .fillMaxWidth(),
+                            isLoading = isLoading.value ,
+                            buttonText = "Save Timesheet" ,
+                            onClick = { submitAddCategory() },
+                            enabled = description.value.isNotEmpty()
+                                    && startDate.value < endDate.value
+                        )
+                    }
                 }
             }
-        }
     }
 }

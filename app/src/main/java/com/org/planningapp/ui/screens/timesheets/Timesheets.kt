@@ -15,19 +15,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,6 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.org.planningapp.domain.model.Timesheet
 import com.org.planningapp.ui.components.AddFloatingButton
+import com.org.planningapp.ui.components.ComponentTopAppBar
 import com.org.planningapp.ui.graphs.CategoryRoutes
 import com.org.planningapp.ui.graphs.TimesheetRoutes
 import com.org.planningapp.ui.screens.categories.CategoriesListViewModel
@@ -232,7 +227,7 @@ fun TimesheetsList(
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun TimeSheetsScreen(
+fun TimeSheetsScreenByCategory(
     categoryID: String?,
     navController: NavController,
     viewModel: TimeSheetsListByCategoryViewModel = hiltViewModel(),
@@ -270,36 +265,40 @@ fun TimeSheetsScreen(
                 },
                 snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
                 topBar = {
-                    TopAppBar(
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                navController.navigate(CategoryRoutes.Home.route)
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowBack,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
-                        title = {
-                            Text(
-                                text = "Timesheets for $categoryName!  ⌚⚡",
-                                color = MaterialTheme.colorScheme.onPrimary,
-                            )
-                        },
-                        )
+                    ComponentTopAppBar(navController = navController,
+                        route = CategoryRoutes.Home.route ,
+                        title = "Timesheets for $categoryName!  ⌚⚡"
+                    )
                 }
             ) {
                 Box(
                     modifier = Modifier
+                        .fillMaxSize()
                         .padding(top = 48.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    TimesheetsList(timesheets = timesheets.value)
+                    // if there aren't any timesheets with this category id
+                    if (timesheets.value.none { it.categoryId == categoryID }) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(32.dp)
+                                .padding(top = 120.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                textAlign = TextAlign.Center,
+                                text = "It's lonely here... 🧍‍♂️",
+                                style = MaterialTheme.typography.headlineLarge
+                            )
+                        }
+                    }
+                    else {
+                        TimesheetsList(timesheets = timesheets.value)
+                    }
                 }
             }
         }
     }
 }
+

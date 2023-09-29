@@ -44,7 +44,9 @@ class TimesheetsListViewModel @Inject constructor(
                     description = it.description,
                     imageUrl = it.imageUrl
                 )
-            })
+            }
+
+            )
 
             _isLoading.emit(false)
         }

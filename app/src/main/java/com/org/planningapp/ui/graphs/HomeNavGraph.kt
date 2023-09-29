@@ -10,7 +10,9 @@ import androidx.navigation.navArgument
 import com.org.planningapp.ui.BottomBarScreen
 import com.org.planningapp.ui.screens.categories.CategoriesScreen
 import com.org.planningapp.ui.screens.categories.add.AddCategoryScreen
-import com.org.planningapp.ui.screens.timesheets.TimeSheetsScreen
+import com.org.planningapp.ui.screens.goals.DailyGoalsScreen
+import com.org.planningapp.ui.screens.goals.add.AddDailyGoalScreen
+import com.org.planningapp.ui.screens.timesheets.TimeSheetsScreenByCategory
 import com.org.planningapp.ui.screens.timesheets.add.AddTimesheetScreen
 
 sealed class CategoryRoutes(val route: String) {
@@ -23,6 +25,11 @@ sealed class TimesheetRoutes(val route: String) {
     object AddTimesheet: TimesheetRoutes("add_timesheet")
 }
 
+sealed class DailyGoalRoutes(val route: String) {
+    object Home: DailyGoalRoutes(BottomBarScreen.Goals.route)
+    object AddGoal: DailyGoalRoutes("add_daily_goal")
+}
+
 object TimesheetByCategoryDestination {
     const val timesheetId = "id"
     val arguments = listOf(navArgument(name = timesheetId) {
@@ -31,6 +38,7 @@ object TimesheetByCategoryDestination {
     fun createRouteWithParam(timesheetId: String) =
         "${TimesheetRoutes.Home.route}/${timesheetId}"
 }
+
 
 @Composable
 fun HomeNavGraph(navController: NavHostController) {
@@ -47,7 +55,11 @@ fun HomeNavGraph(navController: NavHostController) {
         }
 
         composable(route = BottomBarScreen.Goals.route) {
-            Text(text = "Goals")
+            DailyGoalsScreen(navController = navController)
+        }
+
+        composable(route = DailyGoalRoutes.AddGoal.route) {
+            AddDailyGoalScreen(navController = navController)
         }
 
         composable(route = CategoryRoutes.AddCategory.route) {
@@ -59,7 +71,7 @@ fun HomeNavGraph(navController: NavHostController) {
             arguments = TimesheetByCategoryDestination.arguments
         ) { navBackStackEntry ->
             val categoryId = navBackStackEntry.arguments?.getString(TimesheetByCategoryDestination.timesheetId)
-            TimeSheetsScreen(categoryID = categoryId, navController = navController)
+            TimeSheetsScreenByCategory(categoryID = categoryId, navController = navController)
         }
 
         composable(route = TimesheetRoutes.AddTimesheet.route) {
