@@ -49,10 +49,10 @@ fun CategoryItem(
 ) {
     Box(modifier = Modifier
         .fillMaxWidth()
-        .padding(8.dp)
+        .padding(18.dp)
         .clip(MaterialTheme.shapes.large)
         .background(MaterialTheme.colorScheme.surfaceVariant)
-        .padding(16.dp)
+        .padding(24.dp)
         .clickable {
             onClick()
         }
@@ -62,19 +62,18 @@ fun CategoryItem(
         ) {
             Text(
                 text = category.name,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.headlineMedium
             )
-            Spacer(modifier = Modifier.padding(14.dp))
+            Spacer(modifier = Modifier.padding(18.dp))
             Row {
                 Text(text = "Added: " + category.createdAt.readableDate(),
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         IconButton(
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(8.dp),
+                .align(Alignment.BottomEnd),
             onClick = { onDelete() }
         ) {
             Icon(imageVector = Icons.Default.Delete,
