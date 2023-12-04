@@ -10,5 +10,6 @@ interface CategoryRepository {
 
     // deleting a category would mean
     // deleting all the timesheets associated with it
+    // done on the supabase side
     suspend fun deleteCategory(id: String)
 }

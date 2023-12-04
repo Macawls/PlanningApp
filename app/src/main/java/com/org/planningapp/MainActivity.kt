@@ -20,10 +20,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val hasExistingSession = supabaseClient.gotrue.currentSessionOrNull() != null
+            val startDesitination = if (hasExistingSession) Graph.HOME else Graph.AUTH
 
             PlanningAppTheme {
                 RootNavigationGraph(
-                    startDesitination = if (hasExistingSession) Graph.HOME else Graph.AUTH,
+                    startDesitination = startDesitination,
                     navController = rememberNavController()
                 )
             }

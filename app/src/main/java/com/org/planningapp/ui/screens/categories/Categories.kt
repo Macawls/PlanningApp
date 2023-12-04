@@ -154,7 +154,7 @@ fun CategoryListPreview(
 fun CategoriesScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: CategoriesListViewModel = hiltViewModel()
+    viewModel: CategoriesListViewModel = hiltViewModel(),
 ) {
     val isLoading by viewModel.isLoading.collectAsState(initial = false)
     val pullRefreshState = rememberPullRefreshState(
